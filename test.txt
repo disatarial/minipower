@@ -1,0 +1,9 @@
+ 
+" :w23=100000." :write
+1000 PAUSE
+" :w23=200000." :write
+1000 PAUSE
+" :w23=300000." :write
+1000 PAUSE
+" :w23=400000." :write
+1000 PAUSE

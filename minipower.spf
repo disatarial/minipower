@@ -1,0 +1,82 @@
+\ простой перебор комманд из файла  и выдача их в порт
+
+ REQUIRE  F. ~disa/dopoln.F
+ REQUIRE com_port ~disa/COMM.F
+ REQUIRE socket_port ~disa/socket.f
+\
+
+VARIABLE pribor 
+
+VARIABLE file
+VARIABLE pause
+VARIABLE filename
+VARIABLE ENDpause
+VARIABLE work
+
+\ for com port
+VARIABLE speed
+VARIABLE COMPORT
+\ for ethernet
+VARIABLE IPadres
+VARIABLE IPport
+
+
+HERE 0 , 257 ALLOT VALUE filebuf
+
+: :write
+\ STR>S  \ s ! 
+ S+CRLF pribor    @ ^   write
+;
+
+
+
+: run  || D:  num D: s ||
+CR
+S" minipower.ini"   INCLUDE-PROBE IF S" error include   file "  TYPE CR -1 THROW THEN 
+ work 
+ IF
+	com_port @ NewObj pribor  !
+	COMPORT @  pribor  @ ^ open  \ IF ." pribor not open " TYPE -1 THROW ELSE ." pribor open " TYPE THEN CR
+	speed @ 8 0 0   pribor   @ ^ set_comm IF  ." set_comm install "   ELSE ." set_comm  error"   THEN CR
+ ELSE
+	socket_port NewObj pribor !
+	IPadres  IPport  pribor @ ^ open
+
+ THEN
+ 0 =
+ IF \ нет ошибки
+ ." pribor open " CR	
+	filename @ STR@ R/O OPEN-FILE  IF ." file not open "    ELSE ." file open "  THEN CR  file  !
+	BEGIN
+		pause @ PAUSE
+		filebuf 255 file @ READ-LINE THROW SWAP  num ! 		
+	WHILE 
+		filebuf num @ \ STR>S  \ s ! 
+		 \ S+CRLF pribor    @ ^   write   
+		EVALUATE
+ 	REPEAT
+	file @ CLOSE-FILE THROW
+	pribor  @ ^ close 
+ ELSE
+ ." pribor not open " CR
+ THEN
+ENDpause @ PAUSE
+BYE
+;
+
+
+
+\ : ext
+\ com_port NewObj pribor  !
+\ pribor  @ ^ open  0 =
+\ IF \ нет ошибки		
+\	S" test.txt"   INCLUDE-PROBE IF S" error include   file "  TYPE CR -1 THROW THEN 
+\	pribor  @ ^ close 
+\ THEN
+\ ;
+
+
+  FALSE TO ?GUI
+  \   ' CECONSOLE MAINX !
+	 ' run MAINX !
+         S" minipower.exe"  SAVE
