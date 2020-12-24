@@ -3,7 +3,7 @@
  REQUIRE  F. ~disa/dopoln.F
  REQUIRE com_port ~disa/COMM.F
  REQUIRE socket_port ~disa/socket.f
-\
+ REQUIRE  gpib_port ~disa/gpib.F
 
 VARIABLE pribor 
 
@@ -33,37 +33,8 @@ HERE 0 , 257 ALLOT VALUE filebuf
 : run  || D:  num D: s ||
 CR
 S" minipower.ini"   INCLUDE-PROBE IF S" error include   file "  TYPE CR -1 THROW THEN 
- work 
- IF
-	com_port @ NewObj pribor  !
-	COMPORT @  pribor  @ ^ open  \ IF ." pribor not open " TYPE -1 THROW ELSE ." pribor open " TYPE THEN CR
-	speed @ 8 0 0   pribor   @ ^ set_comm IF  ." set_comm install "   ELSE ." set_comm  error"   THEN CR
- ELSE
-	socket_port NewObj pribor !
-	IPadres  IPport  pribor @ ^ open
-
- THEN
- 0 =
- IF \ нет ошибки
- ." pribor open " CR	
-\	filename @ STR@ R/O OPEN-FILE  IF ." file not open "    ELSE ." file open "  THEN CR  file  !
-\	BEGIN
-\		pause @ PAUSE
-\		filebuf 255 file @ READ-LINE THROW SWAP  num ! 		
-\	WHILE 
-\		filebuf num @ \ STR>S  \ s ! 
-\		 \ S+CRLF pribor    @ ^   write   
-\		EVALUATE
- \	REPEAT
-\	file @ CLOSE-FILE THROW
-	filename @  STR@ INCLUDED
-
-	pribor  @ ^ close 
-	filename @ STRFREE
- ELSE
- ." pribor not open " CR
- THEN
-ENDpause @ PAUSE
+ 	filename @  STR@ INCLUDED
+ 
 BYE
 ;
 
